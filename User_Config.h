@@ -6,7 +6,7 @@
 
 //-----WARNING!!! Set the parameters below correctly before flashing this code------------------------------
 //Either "DAC" or "PWM" can be used for controlling the SSR.
-#define outputType PWM
+#define outputType DAC
 //Set to "true" to use a simple Kalman Filter for the temperature probe input
 #define filterInput false      
 //Simply change "Thermistor" to "Thermocouple" to swap the type of temperature sensor used 
@@ -44,18 +44,21 @@
 #endif
 
 #ifdef MAX6675
-#define ThermocoupleSO 19
-#define ThermocoupleCS 23
-#define ThermocoupleSCK 5
+#define ThermocoupleSO 19                         //MISO
+//#define ThermocoupleSI 23                          //MOSI
+#define ThermocoupleCS 5
+#define ThermocoupleSCK 18
+#define thermoReadDelay_ms 300                //Time delay between consecutive reads... min. possible value is 250 ms.
 #else
 #define ThermistorPin 34
 #define adcMax 4095
 #define Vs 3.3
 #endif
 
+#define supplyVoltage 3.3                         //Use 3.3 if directly measuring output from one of the DAC pins or set to whatever the supply/source voltage you use (for example, if you use a transitor connected to 5V then set to 5)
+
 #define incPin 15                                     //Pin used to increase the output voltage of the DAC(can be changed to anyother input pin)
 #define decPin 4                                      //Pin used to decrease the output voltage of the DAC(can be changed to anyother input pin)
-#define supplyVoltage 3.3                         //Use 3.3 if directly measuring output from one of the DAC pins or set to whatever the supply/source voltage you use (for example, if you use a transitor connected to 5V then set to 5)
 #define updateDelay_ms 100                    //This is simply the delay of the loop function in milliseconds. Increase/decrease to speed up the rate of change of voltage when increase or decrease buttons are pressed.
 
 //-----------------------------------------------------------------------------------------------------------------------------

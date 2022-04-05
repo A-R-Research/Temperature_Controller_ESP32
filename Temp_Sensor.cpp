@@ -9,11 +9,12 @@
 Temp_Sensor::Temp_Sensor(bool sensorType)
 {
   _sensorType = sensorType;
-#if (_sensorType)
+#ifdef MAX6675
   pinMode(ThermocoupleCS, OUTPUT);
   pinMode(ThermocoupleSCK, OUTPUT);
   pinMode(ThermocoupleSO, INPUT);
   digitalWrite(ThermocoupleCS, HIGH);
+  Serial.println("Thermocouple Pins set!");
 #else
   //do nothing
 #endif
@@ -21,24 +22,26 @@ Temp_Sensor::Temp_Sensor(bool sensorType)
 
 float Temp_Sensor::readTemp(void)
 {
-  float T, Tc, Tf = 0;
-
 #ifdef MAX6675
-  uint16_t spi = 0;
-  digitalWrite(ThermocoupleCS, LOW);
-  delayMicroseconds(10);
-  spi = getSPI();
-  spi <<= 8;
-  spi |= getSPI();
-  digitalWrite(ThermocoupleCS, HIGH);
-  if (spi & 0x4)  //Thermocouple not found!
+  if (millis() >= timeNow + thermoReadDelay_ms)
   {
-    return NAN;
+    uint16_t spi = 0;
+    digitalWrite(ThermocoupleCS, LOW);
+    delayMicroseconds(10);
+    spi = getSPI();
+    spi <<= 8;
+    spi |= getSPI();
+    digitalWrite(ThermocoupleCS, HIGH);
+    if (spi & 0x4)  //Thermocouple not found!
+    {
+      return NAN;
+    }
+    spi >>= 3;
+    Tc = spi * 0.25;
+    T = Tc + 273.15;
+    Tf = Tc * 9 / 5 + 32;
+    timeNow += thermoReadDelay_ms;
   }
-  spi >>= 3;
-  Tc = spi * 0.25;
-  T = Tc + 273.15;
-  Tf = Tc * 9 / 5 + 32;
   return Tc;
 #else
   float Vout, Rt = 0;
