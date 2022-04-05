@@ -2,12 +2,12 @@
 
 float Input = 0.0;
 float Output = 0.0;
-float Setpoint = 50;    //Temperature Setpoint in (degC)
+float Setpoint = 90;    //Temperature Setpoint in (degC)
 
 #ifdef DACout                 //Set these gains if DAC is selected
-float Kp = 0.08;
-float Ki = 0.03;
-float Kd = 0.05;
+float Kp = 0.35;
+float Ki = 0.6;
+float Kd = 3;
 #else                       //Else set these gains if PWM is selected
 float Kp = 0.9;
 float Ki = 1.6;
@@ -26,7 +26,7 @@ void setup()
   
   myPID.SetTunings(Kp, Ki, Kd);
 #ifdef DACout
-  myPID.SetOutputLimits(0, 1);    //from the DAC pin, value 51 is 0.66v (0 VAC from SSR), 52 is 0.67v (120 VAC from SSR), 53 is 0.69v (240 VAC from SSR)
+  myPID.SetOutputLimits(51, 53);    //from the DAC pin, value 51 is 0.66v (0 VAC from SSR), 52 is 0.67v (120 VAC from SSR), 53 is 0.69v (240 VAC from SSR)
 #else
   myPID.SetOutputLimits(141, 1023); //from PWM pin, value 141 is 0 VAC from SSR and 1023 is 240 VAC from SSR. The voltage is controlled mostly linearly in between (this needs to be tested!).
 #endif
@@ -40,14 +40,7 @@ void loop()
   Input = tempProbe.readTemp();
   myPID.Compute();
 #ifdef DACout
-if((int)Output >=1)
-{
-  dacWrite(DAC1, 255);
-}
-else
-{
-  dacWrite(DAC1, 0);
-}
+  dacWrite(DAC1, Output);
 #else
   ledcWrite(PWMChannel, Output);
 #endif
@@ -55,8 +48,7 @@ else
   Serial.print("Actual_Temp(degC):"); Serial.print(Input); Serial.print(",");
 
 #ifdef DACout
-  Serial.print("ControllerOutput(V):");  Serial.print(supplyVoltage*Output);
-//  Serial.print("ControllerOutput(V):");  Serial.print((float)((supplyVoltage / 255)*Output));
+  Serial.print("ControllerOutput(V):");  Serial.print((float)((Vs / 255)*Output));
 #else
   Serial.print("ControllerOutput(V):");  Serial.print((float)((supplyVoltage / MAX_DUTY_CYCLE )*Output));
 #endif
