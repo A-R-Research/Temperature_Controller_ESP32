@@ -48,7 +48,7 @@ void loop()
   Serial.print("Actual_Temp(degC):"); Serial.print(Input); Serial.print(",");
 
 #ifdef DACout
-  Serial.print("ControllerOutput(V):");  Serial.print((float)((Vs / 255)*Output));
+  Serial.print("ControllerOutput(V):");  Serial.print((float)((supplyVoltage  / 255)*Output));
 #else
   Serial.print("ControllerOutput(V):");  Serial.print((float)((supplyVoltage / MAX_DUTY_CYCLE )*Output));
 #endif
