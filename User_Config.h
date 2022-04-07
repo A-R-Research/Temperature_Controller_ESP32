@@ -1,23 +1,26 @@
 #include "Arduino.h"
 #define Thermistor false      //Do not change!
 #define Thermocouple true  //Do not change!
-#define DAC true               //Do not change!
-#define PWM false             //Do not change!
+#define PWM 0            //Do not change!
+#define DAC 1               //Do not change!
+#define Digital 2
 
 //-----WARNING!!! Set the parameters below correctly before flashing this code------------------------------
-//Either "DAC" or "PWM" can be used for controlling the SSR.
-#define outputType DAC
+//Either "DAC" or "PWM" or "Digital" can be used for controlling the SSR.
+#define outputType Digital
 //Set to "true" to use a simple Kalman Filter for the temperature probe input
 #define filterInput false      
 //Simply change "Thermistor" to "Thermocouple" to swap the type of temperature sensor used 
-#define TemperatureProbeType Thermocouple
+#define TemperatureProbeType Thermistor
 //-----------------------------------------------------------------------------------------------------------------------------
 
 //--------------------Nothing to Change here----------------------------------------------------------------------------
-#if (outputType)
+#if outputType == 0
+#define PWMout
+#elif outputType == 1
 #define DACout
 #else
-#define PWMout
+#define DIGITALout
 #endif
 
 #if (TemperatureProbeType)
@@ -38,9 +41,12 @@
 #define DAC1 25                                         //DAC Channel 1 (can't be changed)
 #define DAC2 26                                         //DAC Channel 2 (can't be changed)
 #define SSR_Pin DAC1
-#else
+#elif defined(PWMout)
 #define PWMPin 25                                     //PWM pin(can be changed to any pin from 0 to 34)
 #define SSR_Pin PWMPin
+#else
+#define digitalPin 25
+#define SSR_Pin digitalPin
 #endif
 
 #ifdef MAX6675
@@ -70,8 +76,7 @@ const int PWMChannel = 0;
 const int PWMResolution = 10;
 const int MAX_DUTY_CYCLE = (int)(pow(2, PWMResolution) - 1);
 
-//-----------------------------------------------------------------------------------------------------------------------------
-
+//-----------You can change the following Thermister properties if required---------------------------------------
 
 const float R1 = 9915;   // voltage divider resistor value
 const float Beta = 3950;  // Beta value
