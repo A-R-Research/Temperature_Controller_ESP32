@@ -46,7 +46,7 @@ float Temp_Sensor::readTemp(void)
 #else
   float Vout, Rt = 0;
   float adc, adc_estimated_value = 0;
-  adc = adc / 10;
+  //  adc = adc / 10;
 #ifdef KalmanFilter
   SimpleKalmanFilter kf = SimpleKalmanFilter(e_mea, e_est, q);
   adc_estimated_value = kf.updateEstimate(adc);
@@ -56,7 +56,7 @@ float Temp_Sensor::readTemp(void)
     adc += analogRead(ThermistorPin);
     delay (2);
   }
-  adc_estimated_value = adc;
+  adc_estimated_value = adc / 10;
 #endif
   Vout = adc_estimated_value * Vs / adcMax;
   Rt = R1 * Vout / (Vs - Vout);
