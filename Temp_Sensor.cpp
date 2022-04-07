@@ -56,7 +56,7 @@ float Temp_Sensor::readTemp(void)
     adc += analogRead(ThermistorPin);
     delay (2);
   }
-  adc_estimated_value = adc / 10;
+  adc_estimated_value = adc/Lavg_sample_size;
 #endif
   Vout = adc_estimated_value * Vs / adcMax;
   Rt = R1 * Vout / (Vs - Vout);
