@@ -1,11 +1,15 @@
 #include "Arduino.h"
 #define Thermistor false      //Do not change!
 #define Thermocouple true  //Do not change!
-#define PWM 0            //Do not change!
-#define DAC 1               //Do not change!
-#define Digital 2
+#define PWM 0                  //Do not change!
+#define DAC 1                   //Do not change!
+#define Digital 2                 //Do not change!
+#define Constant true         //Do not change!
+#define Profile false           //Do not change!
 
 //-----WARNING!!! Set the parameters below correctly before flashing this code------------------------------
+//Either "Constant" setpoint or a present ramp "Profile" can be used for setpoint
+#define setpointType Constant
 //Either "DAC" or "PWM" or "Digital" can be used for controlling the SSR.
 #define outputType Digital
 //Set to "true" to use a simple Kalman Filter for the temperature probe input
@@ -34,6 +38,12 @@
 #else
 #define LinearAverage
 #endif
+
+#if (setpointType)
+#define ConstantSetpoint
+#else
+#define ProfiledSetpoint
+#endif
 //-----------------------------------------------------------------------------------------------------------------------------
 
 //----------You can change some pin definations below if required------------------------------------------------
@@ -54,11 +64,12 @@
 //#define ThermocoupleSI 23                          //MOSI
 #define ThermocoupleCS 5
 #define ThermocoupleSCK 18
-#define thermoReadDelay_ms 300                //Time delay between consecutive reads... min. possible value is 250 ms.
+#define sensorReadDelay_ms 300                //Time delay between consecutive reads... min. possible value is 250 ms.
 #else
 #define ThermistorPin 34
 #define adcMax 4095
 #define Vs 3.3
+//#define sensorReadDelay_ms 50                //Time delay between consecutive reads... min. possible value is 1 ms.
 #endif
 
 #define supplyVoltage 3.3                         //Use 3.3 if directly measuring output from one of the DAC pins or set to whatever the supply/source voltage you use (for example, if you use a transitor connected to 5V then set to 5)

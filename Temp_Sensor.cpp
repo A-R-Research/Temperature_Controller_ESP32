@@ -23,7 +23,7 @@ Temp_Sensor::Temp_Sensor(bool sensorType)
 float Temp_Sensor::readTemp(void)
 {
 #ifdef MAX6675
-  if (millis() >= timeNow + thermoReadDelay_ms)
+  if (millis() >= timeNow + sensorReadDelay_ms)
   {
     uint16_t spi = 0;
     digitalWrite(ThermocoupleCS, LOW);
@@ -40,29 +40,31 @@ float Temp_Sensor::readTemp(void)
     Tc = spi * 0.25;
     T = Tc + 273.15;
     Tf = Tc * 9 / 5 + 32;
-    timeNow += thermoReadDelay_ms;
+    timeNow += sensorReadDelay_ms;
   }
   return Tc;
 #else
-  float Vout, Rt = 0;
-  float adc, adc_estimated_value = 0;
-  //  adc = adc / 10;
+    float Vout = 0.0;
+    float Rt = 0.0;
+    float adc = 0.0;
+    float adc_estimated_value = 0.0;
 #ifdef KalmanFilter
-  SimpleKalmanFilter kf = SimpleKalmanFilter(e_mea, e_est, q);
-  adc_estimated_value = kf.updateEstimate(adc);
+    SimpleKalmanFilter kf = SimpleKalmanFilter(e_mea, e_est, q);
+    adc_estimated_value = kf.updateEstimate(adc);
 #else
-  for  (byte n = 0; n < Lavg_sample_size; n++)
-  {
-    adc += analogRead(ThermistorPin);
-    delay (2);
-  }
-  adc_estimated_value = adc/Lavg_sample_size;
+    for  (byte n = 0; n < Lavg_sample_size; n++)
+    {
+      adc += analogRead(ThermistorPin);
+      delay (2);
+    }
+    adc_estimated_value = adc / Lavg_sample_size;
 #endif
-  Vout = adc_estimated_value * Vs / adcMax;
-  Rt = R1 * Vout / (Vs - Vout);
-  T = 1 / (1 / To + log(Rt / Ro) / Beta); // Temperature in Kelvin
-  Tc = T - 273.15;                   // Celsius
-  Tf = Tc * 9 / 5 + 32;              // Fahrenheit
+
+    Vout = adc_estimated_value * Vs / adcMax;
+    Rt = R1 * Vout / (Vs - Vout);
+    T = 1 / (1 / To + log(Rt / Ro) / Beta); // Temperature in Kelvin
+    Tc = T - 273.15;                   // Celsius
+    Tf = Tc * 9 / 5 + 32;              // Fahrenheit
   return Tc;
 #endif
 }

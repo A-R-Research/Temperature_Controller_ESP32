@@ -29,9 +29,10 @@ class Temp_Sensor {
     byte getSPI(void);
     bool _sensorType = false;
     unsigned long timeNow = 0;
-    float T = 0;
-    float Tc = 0;
-    float Tf = 0;
+    float T = 0.0;
+    float Tc = 0.0;
+    float Tf = 0.0;
+
 };
 
 #endif
