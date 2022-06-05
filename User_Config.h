@@ -6,6 +6,8 @@
 #define Digital 2                 //Do not change!
 #define Constant true         //Do not change!
 #define Profile false           //Do not change!
+#define MATLAB true
+#define SerialMonitor false
 
 //-----WARNING!!! Set the parameters below correctly before flashing this code------------------------------
 //Either "Constant" setpoint or a present ramp "Profile" can be used for setpoint
@@ -16,6 +18,8 @@
 #define filterInput false      
 //Simply change "Thermistor" to "Thermocouple" to swap the type of temperature sensor used 
 #define TemperatureProbeType Thermistor
+
+#define debugType MATLAB
 //-----------------------------------------------------------------------------------------------------------------------------
 
 //--------------------Nothing to Change here----------------------------------------------------------------------------
@@ -44,6 +48,12 @@
 #else
 #define ProfiledSetpoint
 #endif
+
+#if (debugType)
+#define MATLABout
+#else
+#define SerialMonitorOut
+#endif
 //-----------------------------------------------------------------------------------------------------------------------------
 
 //----------You can change some pin definations below if required------------------------------------------------
@@ -58,6 +68,8 @@
 #define digitalPin 25
 #define SSR_Pin digitalPin
 #endif
+
+#define FanPWMPin 26
 
 #ifdef MAX6675
 #define ThermocoupleSO 19                         //MISO
